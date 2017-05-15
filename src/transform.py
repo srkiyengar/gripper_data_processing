@@ -25,7 +25,7 @@ __author__ = 'srkiyengar'
 
 
 import numpy as np
-
+import math
 
 def rotation_matrix_from_quaternions(q_vector):
 
@@ -76,7 +76,34 @@ def inverse_homogenous_transform(H):
     origin = -R.dot(origin)
     return homogenous_transform(R,list(origin.flatten()))
 
+def extract_unit_q_and_vector(H):
+    '''
 
+    :param H:Homogenous transform matrix
+    :return:the 3 unit vectors and the origin from flattened list [r00,r01,r02,x,r10,r11,r12,y,r20,r21,r22,z
+    (r00,r10,r20) is the x-axis unit vector, (r01,r11,r21) is y-axis and (r02,r12,r22) is z-axis (r03,r13,r23) is origin
+    '''
+    N = list(H.flatten())
+    UVx = [N[0],N[4],N[8]]
+    UVy = [N[1],N[5],N[9]]
+    UVz = [N[2],N[6],N[10]]
+    origin = [N[3],N[7],N[11]]
+
+    return UVx, UVy, UVz, origin
+
+def vector_length(X1,Y1,Z1):
+    '''
+
+    :param X1: unit vector along x
+    :param Y1: unit vector along y
+    :param Z1: unit vector along z
+    :return:
+    '''
+    X1_length = math.sqrt(X1[0]*X1[0]+X1[1]*X1[1]+X1[2]*X1[2])
+    Y1_length = math.sqrt(Y1[0]*Y1[0]+Y1[1]*Y1[1]+Y1[2]*Y1[2])
+    Z1_length = math.sqrt(Z1[0]*Z1[0]+Z1[1]*Z1[1]+Z1[2]*Z1[2])
+
+    return X1_length,Y1_length,Z1_length
 
 def center_tool_339_to_gripper_frame():
 
@@ -121,11 +148,6 @@ def static_transform_449_top(q1,v1,q2,v2):
     H3 = center_tool_339_to_gripper_frame()
     H = (h1.dot(H2)).dot(H3)
     return H
-
-
-
-
-
 
 
 
