@@ -68,6 +68,8 @@ def inverse_homogenous_transform(H):
     :param H: Homogenous Transform Matrix
     :return: Inverse Homegenous Transform Matrix
     '''
+
+
     R = H[0:3,0:3]
     origin = H[:-1,3]
     origin.shape = (3,1)
@@ -121,6 +123,7 @@ def center_tool_339_to_gripper_frame():
     H[:,3]= d
     H[(1,0),(1,2)]=1
     H[2,0]= -1
+
     return H
 
 def static_transform_449_top(q1,v1,q2,v2):
