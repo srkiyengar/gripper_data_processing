@@ -111,7 +111,7 @@ def center_tool_339_to_gripper_frame():
 
     '''
     The y-axis of 339 is aligned with the y axis of the gripper. The z-axis of the 339 will require a rotation of 90
-    (counter clockwise with respect to z R (z,90) to get align gripper z axis to outward pointing. the origin of the
+    (counter clockwise with respect to y R (y,90) to get align gripper z axis to outward pointing. the origin of the
     339 needs to be moved in z-axis by + 40.45mm to get it to the origin of the gripper
 
     :return: homogenous transformation from 339 center to gripper center
@@ -150,6 +150,11 @@ def static_transform_449_top(q1,v1,q2,v2):
 
     H3 = center_tool_339_to_gripper_frame()
     H = (h1.dot(H2)).dot(H3)
+    J = (h1.dot(H2.dot(H3)))
+    print "H = "
+    print H
+    print "J = "
+    print J
     return H
 
 
@@ -157,11 +162,13 @@ def static_transform_449_top(q1,v1,q2,v2):
 if __name__ == '__main__':
 
     R1 = np.zeros((3,3))
-    R1[(2,1),(0,1)] = 1
-    R1[0,2]=-1
+    R1[1,0] = 1
+    R1[2,2] = 1
+    R1[0,1]=-1
     print "R1 = "
     print R1
-    H1 = homogenous_transform(R1, [0, -10, 0])
+
+    H1 = homogenous_transform(R1, [-2, 3, -8])
     print "H1 = "
     print H1
     h1 = inverse_homogenous_transform(H1)
@@ -169,13 +176,14 @@ if __name__ == '__main__':
     print h1
 
     R2 = np.zeros((3,3))
-    R2[(1,2),(0,2)] = 1
-    R2[0,1]=-1
+    R2[0,0] = 1
+    R2[2,1] = 1
+    R2[1,2]=-1
 
     print "R2 ="
     print R2
 
-    H2 = homogenous_transform(R2, [0, -10, -6])
+    H2 = homogenous_transform(R2, [0, -11, -1])
     print "H2 ="
     print H2
 
@@ -184,30 +192,50 @@ if __name__ == '__main__':
     print "K ="
     print K
 
+    PC = np.zeros((4,1))
+    PC[0] = 0
+    PC[1] = 11
+    PC[2] = -1
+    PC[3] = 1
+    print "PC ="
+    print PC
+
+    A = K.dot(PC)
+    print "A ="
+    print A
+
+    PF = np.zeros((4,1))
+    PF[0] = -2
+    PF[1] = 3
+    PF[2] = -8
+    PF[3] = 1
+    print "PF ="
+    print PF
+
+    B = H1.dot(K)
+    print "B ="
+    print B
+
+    nH1 = homogenous_transform(R1, [-3, 4, -8])
+    print "nH1 = "
+    print nH1
+
+    B1 = nH1.dot(K)
+    print "B1 ="
+    print B1
+
+
+    # This translation works. The resultant R used to pre-multiply Gripper pose
+    R = R1.T
+    Rf = R.dot(R2)
+
+    C = R1.dot(Rf)
+    print "C ="
+    print C
 
 
 
-    K1 = np.zeros((3,3))
-    K1[(0,1,2),(0,1,2)] = 1
-    print "K1 ="
-    print K1
 
-    k1 = homogenous_transform(K1, [0, 2, 0])
-    print "k1 ="
-    print k1
-
-    K2 = K.dot(k1)
-    print "K2 ="
-    print K2
-
-    H1 = homogenous_transform(R1, [0, -11, 0])
-
-
-
-    J = H1.dot(K2)
-    print J
-    J2 = list(J.flatten())[:-4]
-    print J2
     pass
 
 
